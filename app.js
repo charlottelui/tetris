@@ -128,10 +128,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function rotate() {
         undraw();
         currentRotation ++;
+        const isAtRightEdge = current.some(index => (currentPosition + index ) % width === 9);
+        const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0);
+
         if (currentRotation === current.length) {
             currentRotation = 0
         }
+
         current = theTetrominoes[random][currentRotation];
+
+        if (isAtRightEdge) {
+            currentPosition -= 1;
+        } else if (isAtLeftEdge) {
+            currentPosition += 1;
+        }
+
         draw();
     }
 
@@ -166,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timerId = null;
         } else {
             draw();
-            timerId = setInterval(moveDown, 1000);
+            timerId = setInterval(moveDown, 2000);
             displayShape();
         }
     });
