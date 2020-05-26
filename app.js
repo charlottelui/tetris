@@ -3,10 +3,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let squares = Array.from(document.querySelectorAll('.grid div'));
     const scoreDisplay = document.querySelector('#score');
     const startBtn = document.querySelector('#start-button');
+    const clearBtn = document.querySelector('#clear-button');
     const width = 10;
     let nextRandom = 0;
     let timerId;
     let score = 0;
+    const colors = [
+        'orange',
+        'red',
+        'purple',
+        'green',
+        'blue'
+    ];
 
     //The Tetrominoes
     const lTetromino = [
@@ -55,12 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function draw() {
         current.forEach(index => {
             squares[currentPosition + index].classList.add('tetromino');
+            squares[currentPosition + index].style.backgroundColor = colors[random];
         })
     }
 
     function undraw() {
         current.forEach(index => {
             squares[currentPosition + index].classList.remove('tetromino');
+            squares[currentPosition + index].style.backgroundColor = '';
         })
     }
 
@@ -77,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document,addEventListener('keyup', control);
+    document.addEventListener('keyup', control);
 
     function moveDown() {
         undraw();
@@ -96,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             draw();
             displayShape();
             addScore();
+            gameOver();
         }
     };
 
@@ -128,8 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function rotate() {
         undraw();
         currentRotation ++;
-        const isAtRightEdge = current.some(index => (currentPosition + index ) % width === 9);
-        const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0);
+        const overRightEdge = current.some( index => (currentPosition + index ) % width === 9);
+        const overLeftEdge = current.some( index => (currentPosition + index) % width === 0);
 
         if (currentRotation === current.length) {
             currentRotation = 0
@@ -137,9 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         current = theTetrominoes[random][currentRotation];
 
-        if (isAtRightEdge) {
+        if (overRightEdge) {
             currentPosition -= 1;
-        } else if (isAtLeftEdge) {
+        } else if (overLeftEdge) {
             currentPosition += 1;
         }
 
@@ -164,9 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayShape() {
         displaySquares.forEach( square => {
             square.classList.remove('tetromino');
+            square.style.backgroundColor = '';
         });
         upNextTetrominoes[nextRandom].forEach( index => {
             displaySquares[displayIndex + index].classList.add('tetromino');
+            displaySquares[displayIndex + index].style.backgroundColor = colors[nextRandom];
         });
     }
 
@@ -182,6 +195,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    clearBtn.addEventListener('click',() => {
+        clearInterval(timerId);
+        timerId = null;
+        squares.forEach( square => {
+            if(square.classList.contains('tetromino')){
+                square.classList.remove('tetromino');
+                square.style.backgroundColor = '';
+                square.classList.remove('taken');
+            };
+        })
+        displaySquares.forEach( square => {
+            if(square.classList.contains('tetromino')){
+                square.classList.remove('tetromino');
+                square.style.backgroundColor = '';
+                square.classList.remove('taken');
+            };
+        })
+        scoreDisplay.innerHTML = 0;
+
+    });
+
     // add score
     function addScore() {
         for (let i = 0; i < 199; i += width) {
@@ -192,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.forEach( index => {
                     squares[index].classList.remove('taken');
                     squares[index].classList.remove('tetromino');
+                    squares[index].style.backgroundColor = '';
                 });
                 const squaresRemoved = squares.splice(i, width);
                 squares = squaresRemoved.concat(squares);
@@ -201,7 +236,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
+    // game over
+    function gameOver() {
+    if(current.some( index => squares[currentPosition + index].classList.contains('taken'))) {
+        scoreDisplay.innerHTML = 'end';
+        clearInterval(timerId);
+    }
+    }
 
 
 
