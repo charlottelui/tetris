@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timerId = null;
         } else {
             draw();
-            timerId = setInterval(moveDown, 2000);
+            timerId = setInterval(moveDown, 800);
             displayShape();
         }
     });
