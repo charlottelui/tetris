@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startBtn = document.querySelector('#start-button');
     const width = 10;
     let nextRandom = 0;
+    let timerId
 
     //The Tetrominoes
     const lTetromino = [
@@ -61,9 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
             squares[currentPosition + index].classList.remove('tetromino');
         })
     }
-
-    // Move the tetrominos
-    timerId = setInterval(moveDown, 1000);
 
     // controls
     function control(e) {
@@ -159,7 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // add functionality to the button
+    startBtn.addEventListener('click',() => {
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+        } else {
+            draw();
+            timerId = setInterval(moveDown, 1000);
+            displayShape();
+        }
 
+    })
 
 
 
